@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Karaoke en línea - Graba tu voz</title>
+  <link rel="stylesheet" href="../CSS/karaoke.css">
+</head>
+
+<body>
+  <div class="top-bar">
+    <p><a href="paginaprincipal.html">Página principal</a><a href="Removedor.html">🎛 Removedor</a><a
+        href="Separador.html">🔀 Separador</a><a href="../Páginas/Pitcher.html">🎚 Pitcher</a><a
+        href="../Páginas/Detector BPM.html">🎵 Detector BPM</a><a href="../Páginas/Cortadoraudio.html">✂️ Cortador</a><a
+        href="../Páginas/Unificador.html">🔗 Unificador</a><a href="../Páginas/Grabador.html">🎤 Grabador</a><a
+        href="../Páginas/Karaoke.html">🎙 Karaoke</a><a href="../Páginas/Soporte.html">❓ Soporte</a>
+  </div>
+  </p>
+  </div>
+  <div id="container" role="main" aria-label="Karaoke en línea - Graba tu voz">
+    <h1>Karaoke en Línea</h1>
+
+    <label for="instrumentalInput">Selecciona pista instrumental (audio):</label>
+    <input id="instrumentalInput" type="file" accept="audio/*" aria-describedby="instrumentalDesc" />
+    <div id="instrumentalDesc" class="sr-only">Carga un archivo de audio para la pista instrumental</div>
+
+    <audio id="audioInstrumental" controls preload="none" aria-label="Reproductor de pista instrumental"></audio>
+
+    <label for="letraTextarea">Pega aquí la letra de la canción:</label>
+    <textarea id="letraTextarea" rows="6" placeholder="Pega o escribe la letra aquí..."
+      aria-label="Área para pegar la letra"></textarea>
+
+    <div id="letra-container" aria-live="off" aria-label="Letra de la canción en reproducción">
+      <div id="letra-text" tabindex="0"></div>
+    </div>
+
+    <div id="scrollSpeedControl" aria-label="Control de velocidad de desplazamiento de la letra">
+      <label id="scrollSpeedLabel" for="scrollSpeedRange">Velocidad de scroll:</label>
+      <input type="range" id="scrollSpeedRange" min="5" max="100" step="1" value="20" aria-valuemin="5"
+        aria-valuemax="100" aria-valuenow="20" aria-label="Control deslizante para ajustar velocidad de scroll" />
+      <span id="scrollSpeedValue">20 px/s</span>
+    </div>
+
+    <div id="controls" aria-label="Controles de grabación y reproducción">
+      <button id="recordBtn" aria-pressed="false" aria-label="Grabar voz" disabled>Grabar</button>
+      <button id="pauseBtn" aria-label="Pausar grabación o reproducción" disabled>Pausar</button>
+      <button id="stopBtn" aria-label="Detener grabación o reproducción" disabled>Detener</button>
+      <button id="downloadBtn" aria-label="Descargar grabación de voz" disabled>Descargar</button>
+    </div>
+
+    <div id="timer" aria-live="polite" aria-atomic="true">00:00</div>
+
+    <audio id="audioRecording" controls aria-label="Reproductor de la grabación de voz"></audio>
+  </div>
+
+  <div class="footer" role="contentinfo">
+    <h1>MusicIAn Karaoke</h1>
+    © 2025 MusicIAn - Todos los derechos reservados
+    <p>Política de Privacidad • Aviso Legal • Política de Cookies • Política de Calidad</p>
+  </div>
+
+  <!-- LAME MP3 Encoder from CDN (lamejs) -->
+  <script src="./js/karaoke.js"></script>
+
+  <script>
+    (() => {
+      const instrumentalInput = document.getElementById('instrumentalInput');
+      const audioInstrumental = document.getElementById('audioInstrumental');
+      const letraTextarea = document.getElementById('letraTextarea');
+      const letraContainer = document.getElementById('letra-container');
+      const letraText = document.getElementById('letra-text');
+      const recordBtn = document.getElementById('recordBtn');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const timerDisplay = document.getElementById('timer');
+      const audioRecording = document.getElementById('audioRecording');
+      const scrollSpeedRange = document.getElementById('scrollSpeedRange');
+      const scrollSpeedValue = document.getElementById('scrollSpeedValue');
+
+      let mediaRecorder = null;
+      let recordedChunks = [];
+      let recordingStartTime = 0;
+      let timerInterval = null;
+      let isRecording = false;
+      let isPaused = false;
+      let pauseStartTime = 0;
+
+      // Variables for autonomous scrolling lyrics
+      let scrollSpeed = Number(scrollSpeedRange.value); // px per second
+      let scrollPosition = 0;
+      let scrollAnimationFrame = null;
+      let lastTimestamp = null;
+
+      // Set letra-text content from textarea
+      function updateLyricsText() {
+        const rawText = letraTextarea.value.trim();
+        const escapedText = rawText
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\n/g, "<br>");
+        letraText.innerHTML = escapedText || '<i style="color:#666;">Pega o escribe la letra aquí para verla aquí.</i>';
+        scrollPosition = 0;
+        letraText.style.top = "0px";
+      }
+
+      // Autonomous smooth scrolling lyrics independent of audio
+      function scrollStep(timestamp) {
+        if (!lastTimestamp) lastTimestamp = timestamp;
+        const elapsed = (timestamp - lastTimestamp) / 1000; // seconds elapsed since last frame
+        lastTimestamp = timestamp;
+
+        // Calculate new scroll position
+        scrollPosition -= scrollSpeed * elapsed;
+        const maxScroll = letraText.offsetHeight - letraContainer.offsetHeight;
+        if (-scrollPosition >= maxScroll) {
+          // reset scroll to top for looped scrolling
+          scrollPosition = 0;
+        }
+        letraText.style.top = scrollPosition + "px";
+
+        scrollAnimationFrame = requestAnimationFrame(scrollStep);
+      }
+
+      function startScrollingLyrics() {
+        if (scrollAnimationFrame) cancelAnimationFrame(scrollAnimationFrame);
+        lastTimestamp = null;
+        scrollAnimationFrame = requestAnimationFrame(scrollStep);
+      }
+
+      function stopScrollingLyrics() {
+        if (scrollAnimationFrame) {
+          cancelAnimationFrame(scrollAnimationFrame);
+          scrollAnimationFrame = null;
+        }
+      }
+    })
+  </script>

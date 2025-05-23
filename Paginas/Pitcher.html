@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Cambiar Tono</title>
+  <link rel="stylesheet" href="../CSS/pitcher.css">
+</head>
+
+<body>
+  <!-- HEADER -->
+  <div class="top-bar">
+    <p><a href="paginaprincipal.html">Página principal</a><a href="Removedor.html">🎛 Removedor</a><a
+        href="Separador.html">🔀 Separador</a><a href="../Páginas/Pitcher.html">🎚 Pitcher</a><a
+        href="../Páginas/Detector BPM.html">🎵 Detector BPM</a><a href="../Páginas/Cortadoraudio.html">✂️ Cortador</a><a
+        href="../Páginas/Unificador.html">🔗 Unificador</a><a href="../Páginas/Grabador.html">🎤 Grabador</a><a
+        href="../Páginas/Karaoke.html">🎙 Karaoke</a><a href="../Páginas/Soporte.html">❓ Soporte</a>
+  </div>
+  </p>
+  </div>
+  <!-- MAIN -->
+  <section id="pitcher">
+    <h2>Cambiar Tono</h2>
+    <p>Sube o baja el tono de una pista sin cambiar la velocidad.</p>
+    <form>
+      <input type="file" accept="audio/*" required>
+      <label for="pitch">Tono (semitonos):</label>
+      <input type="range" id="pitch" min="-12" max="12" value="0">
+      <span id="pitch-value">0</span>
+      <button type="submit">Aplicar</button>
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <h1>MusicIAn</h1>
+    <p>© 2025 MusicIAn - Todos los derechos reservados</p>
+    <p>Política de Privacitat • Avís Legal • Política de Cookies • Política de Qualitat</p>
+  </div>
+  
+</body>
+</html>

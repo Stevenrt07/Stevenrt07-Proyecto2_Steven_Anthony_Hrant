@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Cortador de Audio MP3 - MusicIAn</title>
+  <link rel="stylesheet" href="../CSS/cortadoraudio.css">
+</head>
+
+<body>
+  <!-- HEADER -->
+  <div class="top-bar">
+    <p><a href="paginaprincipal.html">Página principal</a><a href="Removedor.html">🎛 Removedor</a><a
+        href="Separador.html">🔀 Separador</a><a href="../Páginas/Pitcher.html">🎚 Pitcher</a><a
+        href="../Páginas/Detector BPM.html">🎵 Detector BPM</a><a href="../Páginas/Cortadoraudio.html">✂️ Cortador</a><a
+        href="../Páginas/Unificador.html">🔗 Unificador</a><a href="../Páginas/Grabador.html">🎤 Grabador</a><a
+        href="../Páginas/Karaoke.html">🎙 Karaoke</a><a href="../Páginas/Soporte.html">❓ Soporte</a>
+  </div>
+  </p>
+  </div>
+  <!-- MAIN -->
+  <div class="main" aria-label="Cortador de archivos de audio a MP3">
+    <h1>Cortador de Audio MP3</h1>
+
+    <label for="audioFile">Selecciona archivo de audio:</label>
+    <input class="container" type="file" id="audioFile" accept="audio/*" aria-describedby="descFile" />
+    <div id="descFile" class="sr-only">Selecciona un archivo de audio para cortar</div>
+
+    <audio id="audioPlayer" controls aria-label="Reproductor de audio"></audio>
+
+    <div id="timeInputs" aria-label="Tiempos de corte">
+      <label for="startTime">Inicio (mm:ss o ss):
+        <input type="text" id="startTime" placeholder="00:00" aria-live="polite" aria-atomic="true" />
+        <div class="time-hint">Ej: 1:23 o 83.5</div>
+      </label>
+      <label for="endTime">Fin (mm:ss o ss):
+        <input type="text" id="endTime" placeholder="00:00" aria-live="polite" aria-atomic="true" />
+        <div class="time-hint">Ej: 2:10 o 130.25</div>
+      </label>
+    </div>
+
+    <button id="cutBtn" disabled>✂️ Cortar y Descargar MP3</button>
+  </div>
+
+
+
+  <script src="./js/cortadoraudio.js"></script>
+  <script>
+    (() => {
+      const audioFileInput = document.getElementById('audioFile');
+      const audioPlayer = document.getElementById('audioPlayer');
+      const startTimeInput = document.getElementById('startTime');
+      const endTimeInput = document.getElementById('endTime');
+      const cutBtn = document.getElementById('cutBtn');
+
+      let audioContext;
+      let audioBuffer;
+      let currentFileUrl = null;
+
+      function parseTimeToSeconds(text) {
+        text = text.trim();
+        if (!text) return null;
+        const mmssRegex = /^(\d+):([0-5]?\d(\.\d*)?)$/;
+        const m = mmssRegex.exec(text);
+        if (m) {
+          return parseInt(m[1], 10) * 60 + parseFloat(m[2]);
+        } else {
+          const asNumber = parseFloat(text);
+          return isNaN(asNumber) ? null : asNumber;
+        }
+      }
+
+      function formatSecondsToMSS(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = (seconds % 60).toFixed(2);
+        return `${m}:${s.padStart(5, '0')}`;
+      }
+
+      audioFileInput.addEventListener('change', async () => {
+        // Reset UI
+        cutBtn.disabled = true;
+        audioPlayer.src = "";
+        startTimeInput.value = "";
+        endTimeInput.value = "";
+
+        if (currentFileUrl) {
+          URL.revokeObjectURL(currentFileUrl);
+          currentFileUrl = null;
+        }
+
+        const files = audioFileInput.files;
+        if (!files || files.length === 0) return;
+
+        const file = files[0];
+        currentFileUrl = URL.createObjectURL(file);
+        audioPlayer.src = currentFileUrl;
+
+        // Load into AudioContext buffer
+        if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        try {
+          const arrayBuffer = await file.arrayBuffer();
+          audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+          startTimeInput.value = "0";
+          endTimeInput.value = formatSecondsToMSS(audioBuffer.duration);
+
+          cutBtn.disabled = false;
+        } catch (e) {
+          alert("Error al cargar el archivo de audio.");
+          cutBtn.disabled = true;
+          audioBuffer = null;
+        }
+      });
+
+      function validateTimes() {
+        if (!audioBuffer) return false;
+        const startSeconds = parseTimeToSeconds(startTimeInput.value);
+        const endSeconds = parseTimeToSeconds(endTimeInput.value);
+        if (startSeconds === null || endSeconds === null) return false;
+        if (startSeconds < 0 || endSeconds > audioBuffer.duration) return false;
+        if (startSeconds >= endSeconds) return false;
+        return true;
+      }
+
+      function showInvalidInputAlert() {
+        alert("Por favor ingresa tiempos válidos en formato mm:ss o segundos, con inicio menor que fin y dentro de la duración del audio.");
+      }
+
+      startTimeInput.addEventListener('input', () => {
+        cutBtn.disabled = !validateTimes();
+      });
+      endTimeInput.addEventListener('input', () => {
+        cutBtn.disabled = !validateTimes();
+      });
+
+      cutBtn.addEventListener('click', () => {
+        if (!audioBuffer) return;
+        if (!validateTimes()) {
+          showInvalidInputAlert();
+          return;
+        }
+
+        const startSeconds = parseTimeToSeconds(startTimeInput.value);
+        const endSeconds = parseTimeToSeconds(endTimeInput.value);
+
+        const sampleRate = audioBuffer.sampleRate;
+        const startSample = Math.floor(startSeconds * sampleRate);
+        const endSample = Math.floor(endSeconds * sampleRate);
+        const cutLength = endSample - startSample;
+
+        // Crear buffer de salida
+        const numberOfChannels = audioBuffer.numberOfChannels;
+        const newBuffer = audioContext.createBuffer(numberOfChannels, cutLength, sampleRate);
+
+        for (let ch = 0; ch < numberOfChannels; ch++) {
+          const channelData = audioBuffer.getChannelData(ch).slice(startSample, endSample);
+          newBuffer.copyToChannel(channelData, ch, 0);
+        }
+
+        // Convertir buffer a mp3 con lamejs
+        const mp3Blob = encodeMp3(newBuffer);
+
+        // Descargar mp3
+        const url = URL.createObjectURL(mp3Blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'audio_cortado.mp3';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      });
+
+      // Codificación mp3 con lamejs
+      function encodeMp3(audioBuffer) {
+        const numChannels = audioBuffer.numberOfChannels;
+        const sampleRate = audioBuffer.sampleRate;
+        const mp3encoder = new lamejs.Mp3Encoder(numChannels, sampleRate, 128);
+        const samplesPerFrame = 1152;
+        let mp3Data = [];
+
+        // Recolectar canal de audio y convertir a Int16 PCM
+        if (numChannels === 1) {
+          const channelData = audioBuffer.getChannelData(0);
+          let sampleBlock = new Int16Array(samplesPerFrame);
+          for (let i = 0; i < channelData.length; i += samplesPerFrame) {
+            const len = Math.min(samplesPerFrame, channelData.length - i);
+            for (let j = 0; j < len; j++) {
+              let s = Math.max(-1, Math.min(1, channelData[i + j]));
+              sampleBlock[j] = s < 0 ? s * 32768 : s * 32767;
+            }
+            const mp3buf = mp3encoder.encodeBuffer(sampleBlock.subarray(0, len));
+            if (mp3buf.length > 0) mp3Data.push(mp3buf);
+          }
+        } else if (numChannels === 2) {
+          const left = audioBuffer.getChannelData(0);
+          const right = audioBuffer.getChannelData(1);
+          let leftBlock = new Int16Array(samplesPerFrame);
+          let rightBlock = new Int16Array(samplesPerFrame);
+          for (let i = 0; i < left.length; i += samplesPerFrame) {
+            const len = Math.min(samplesPerFrame, left.length - i);
+            for (let j = 0; j < len; j++) {
+              let sl = Math.max(-1, Math.min(1, left[i + j]));
+              let sr = Math.max(-1, Math.min(1, right[i + j]));
+              leftBlock[j] = sl < 0 ? sl * 32768 : sl * 32767;
+              rightBlock[j] = sr < 0 ? sr * 32768 : sr * 32767;
+            }
+            const mp3buf = mp3encoder.encodeBuffer(leftBlock.subarray(0, len), rightBlock.subarray(0, len));
+            if (mp3buf.length > 0) mp3Data.push(mp3buf);
+          }
+        } else {
+          alert("Audio con más de 2 canales no soportado.");
+          return new Blob([], { type: 'audio/mp3' });
+        }
+
+        const mp3buf = mp3encoder.flush();
+        if (mp3buf.length > 0) mp3Data.push(mp3buf);
+
+        return new Blob(mp3Data, { type: 'audio/mp3' });
+      }
+    })();
+  </script>
+  <!-- FOOTER -->
+  <div class="footer">
+    <h1>MusicIAn</h1>
+    <p>© 2025 MusicIAn - Todos los derechos reservados</p>
+    <p>Política de Privacitat • Avís Legal • Política de Cookies • Política de Qualitat</p>
+  </div>
+</body>
+
+</html>
+</content>
+</create_file>

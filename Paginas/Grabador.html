@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grabador de Audio en MP3</title>
+  <link rel="stylesheet" href="../CSS/grabador.css">
+  </head>
+  <body>
+     <!-- HEADER -->
+  <div class="top-bar">
+    <p><a href="paginaprincipal.html">Página principal</a><a href="Removedor.html">🎛 Removedor</a><a href="Separador.html">🔀 Separador</a><a href="../Páginas/Pitcher.html">🎚 Pitcher</a><a href="../Páginas/Detector BPM.html">🎵 Detector BPM</a><a href="../Páginas/Cortadoraudio.html">✂️ Cortador</a><a href="../Páginas/Unificador.html">🔗 Unificador</a><a href="../Páginas/Grabador.html">🎤 Grabador</a><a href="../Páginas/Karaoke.html">🎙 Karaoke</a><a href="../Páginas/Soporte.html">❓ Soporte</a></div></p>
+  </div>
+  <!-- MAIN -->
+  <div class="main">
+    <h1>🎙️ Grabador de Audio</h1>
+    <p>Presiona <strong>Iniciar Grabación</strong> para empezar a grabar desde tu micrófono. Cuando termines, pulsa <strong>Detener Grabación</strong> para convertir y descargar en MP3.</p>
+
+    <div>
+      <button id="start">Iniciar Grabación</button>
+      <button id="stop" disabled>Detener Grabación</button>
+    </div>
+
+    <audio id="audio" controls></audio>
+    <a id="download" download="grabacion.mp3">📥 Descargar MP3</a>
+  </div>
+  <!-- FOOTER -->
+  <div class="footer">
+  <h1>MusicIAn</h1>
+  <p> © 2025 MusicIAn - Todos los derechos reservados</p>
+  <p>Política de Privacitat • Avís Legal • Política de Cookies • Política de Qualitat</p>
+  </div>
+  <!-- SCRIPT -->
+  <script src="./gravaraudio.js"></script>
+  <script>
+    let mediaRecorder;
+    let audioChunks = [];
+
+    const startBtn = document.getElementById('start');
+    const stopBtn = document.getElementById('stop');
+    const audioElem = document.getElementById('audio');
+    const downloadLink = document.getElementById('download');
+
+    startBtn.addEventListener('click', async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = e => {
+          if (e.data.size > 0) audioChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+          const webmBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const arrayBuffer = await webmBlob.arrayBuffer();
+
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+          const channelData = audioBuffer.getChannelData(0);
+
+          const samples = new Int16Array(channelData.length);
+          for (let i = 0; i < channelData.length; i++) {
+            const s = Math.max(-1, Math.min(1, channelData[i]));
+            samples[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+          }
+
+          const mp3Encoder = new lamejs.Mp3Encoder(1, audioBuffer.sampleRate, 128);
+          const sampleBlockSize = 1152;
+          const mp3Data = [];
+
+          for (let i = 0; i < samples.length; i += sampleBlockSize) {
+            const chunk = samples.subarray(i, i + sampleBlockSize);
+            const mp3buf = mp3Encoder.encodeBuffer(chunk);
+            if (mp3buf.length > 0) mp3Data.push(mp3buf);
+          }
+          const mp3buf = mp3Encoder.flush();
+          if (mp3buf.length > 0) mp3Data.push(mp3buf);
+
+          const mp3Blob = new Blob(mp3Data, { type: 'audio/mpeg' });
+          const url = URL.createObjectURL(mp3Blob);
+
+          audioElem.src = url;
+          downloadLink.href = url;
+          downloadLink.style.display = 'block';
+        };
+
+        mediaRecorder.start();
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+      } catch (err) {
+        console.error('Error al acceder al micrófono', err);
+        alert('No se pudo acceder al micrófono.');
+      }
+    });
+
+    stopBtn.addEventListener('click', () => {
+      mediaRecorder.stop();
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+* {
+   box-sizing: border-box;
+ }
+ body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f0f1a;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  /* 🔵 HEADER */
+  .top-bar {
+    background-color: #4c1d95;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .top-bar a {
+    color: #fff;
+    text-decoration: underline;
+  }
+  
+  /* 🔵 Bloque 2: Contenido principal */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  
+  .main h1 {
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+  
+  .main h2 {
+    font-size: 24px;
+    color: #bbb;
+    margin-bottom: 20px;
+  }
+  
+  .main p {
+    max-width: 600px;
+    color: #ccc;
+    margin-bottom: 30px;
+  }
+
+  button {
+    padding: 12px 24px;
+    background-color: #5b21b6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    }
+    
+ input[type="text"],
+ input[type="email"],
+ select,
+ textarea {
+   width: 100%;
+   background: rgba(255,255,255,0.1);
+   color: #eee;
+   border: none;
+   border-radius: 12px;
+   padding: 12px 15px;
+   font-size: 1rem;
+   outline: none;
+   margin-bottom: 20px;
+   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+   resize: vertical;
+   box-shadow: inset 0 0 8px rgba(255,255,255,0.1);
+   transition: box-shadow 0.3s ease;
+ }
+ input[type="text"]:focus,
+ input[type="email"]:focus,
+ select:focus,
+ textarea:focus {
+   box-shadow: inset 0 0 12px #7e92f0;
+ }
+ button {
+   background-color: #5b21b6;
+   color: white;
+   border: none;
+   border-radius: 10px;
+   font-weight: 700;
+   font-size: 1.2rem;
+   padding: 14px 36px;
+   cursor: pointer;
+   box-shadow: 0 6px 10px rgba(101, 126, 234, 0.8);
+   transition: background 0.3s ease, transform 0.2s ease;
+   user-select: none;
+   align-self: center;
+ }
+ button:disabled {
+   background: #8888aa;
+   cursor: not-allowed;
+   box-shadow: none;
+ }
+ button:hover:not(:disabled) {
+   background: linear-gradient(145deg, #7e92f0, #5571f0);
+   transform: scale(1.05);
+ }
+ .faq-item {
+   background: #1f1f2e;
+   border-radius: 14px;
+   padding: 15px 20px;
+   margin-bottom: 15px;
+   cursor: pointer;
+   user-select: none;
+   box-shadow: 0 0 6px rgba(76, 29, 149, 0.6);
+ }
+ .faq-question {
+   font-weight: 700;
+   font-size: 1.1rem;
+   color: #ddd;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+ }
+ .faq-answer {
+   margin-top: 10px;
+   color: #bbb;
+   font-size: 0.95rem;
+   line-height: 1.4;
+ }
+ .faq-item.open .faq-answer {
+   display: block;
+ }
+ .faq-item .toggle-icon {
+   font-size: 1.3rem;
+   user-select: none;
+ }
+ /* Responsive */
+ @media (max-width: 480px) {
+   #container {
+     padding: 20px;
+   }
+   button {
+     width: 100%;
+     padding: 14px 0;
+     font-size: 1.1rem;
+   }
+ }
+ /* Footer */
+  .footer {
+    background-color: #1f1f2e;
+    text-align: center;
+    padding: 15px;
+    font-size: 14px;
+    color: #777;
+  }
+  a {
+    color: #ffffff;
+  }

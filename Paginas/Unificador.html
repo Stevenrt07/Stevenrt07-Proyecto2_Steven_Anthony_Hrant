@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Unir Pistas de Audio</title>
+  <link rel="stylesheet" href="../CSS/unificador.css">
+</head>
+
+<body>
+  <!-- HEADER -->
+  <div class="top-bar">
+    <p><a href="paginaprincipal.html">Página principal</a><a href="Removedor.html">🎛 Removedor</a><a
+        href="Separador.html">🔀 Separador</a><a href="../Páginas/Pitcher.html">🎚 Pitcher</a><a
+        href="../Páginas/Detector BPM.html">🎵 Detector BPM</a><a href="../Páginas/Cortadoraudio.html">✂️ Cortador</a><a
+        href="../Páginas/Unificador.html">🔗 Unificador</a><a href="../Páginas/Grabador.html">🎤 Grabador</a><a
+        href="../Páginas/Karaoke.html">🎙 Karaoke</a><a href="../Páginas/Soporte.html">❓ Soporte</a>
+  </div>
+  </p>
+  </div>
+  <!-- MAIN -->
+  <div class="main">
+    <h1>Une varias pistas de canciones en una sola</h1>
+    <h2>Elige los archivos de audio que quieres fusionar</h2>
+    <input id="fileInput" type="file" accept="audio/*" multiple aria-label="Selecciona archivos de audio" />
+
+    <div id="container">
+      <h1>Unificador de Pistas</h1>
+      <p id="timer">00:00</p>
+      <div id="controls">
+        <button id="mergeBtn" disabled aria-label="Unir audios">🎶</button>
+      </div>
+      <audio id="audioOutput" controls aria-label="Reproductor de audio resultante"></audio>
+    </div>
+  </div>
+  <!-- FOOTER -->
+  <div class="footer">
+    <h1>MusicIAn</h1>
+    <p> © 2025 MusicIAn - Todos los derechos reservados</p>
+    <p>Política de Privacitat • Avís Legal • Política de Cookies • Política de Qualitat</p>
+  </div>
+  <!-- SCRIPT -->
+
+  <script>
+    (() => {
+      const fileInput = document.getElementById('fileInput');
+      const mergeBtn = document.getElementById('mergeBtn');
+      const audioOutput = document.getElementById('audioOutput');
+      let audioContext = null;
+      let mediaRecorder = null;
+      let recordedChunks = [];
+      let recordingDuration = 0;
+      let timerInterval = null;
+      let recordingStartTime = 0;
+
+      function formatTime(ms) {
+        const totalSeconds = Math.floor(ms / 1000);
+        const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+        const seconds = String(totalSeconds % 60).padStart(2, '0');
+        return `${minutes}:${seconds}`;
+      }
+
+      function updateTimer() {
+        const elapsed = Date.now() - recordingStartTime;
+        if (elapsed > recordingDuration) {
+          clearInterval(timerInterval);
+          document.getElementById('timer').textContent = formatTime(recordingDuration);
+        } else {
+          document.getElementById('timer').textContent = formatTime(elapsed);
+        }
+      }
+
+      fileInput.addEventListener('change', () => {
+        mergeBtn.disabled = fileInput.files.length < 2;
+        audioOutput.src = '';
+      });
+
+      mergeBtn.addEventListener('click', async () => {
+        if (audioContext) {
+          audioContext.close();
+          audioContext = null;
+        }
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        const dest = audioContext.createMediaStreamDestination();
+        const sources = [];
+
+        try {
+          for (const file of fileInput.files) {
+            const arrayBuffer = await file.arrayBuffer();
+            const decodedBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            const source = audioContext.createBufferSource();
+            source.buffer = decodedBuffer;
+            source.connect(dest);
+            sources.push(source);
+          }
+        } catch (e) {
+          alert('Error al leer o decodificar archivos de audio.');
+          return;
+        }
+
+        if (sources.length < 2) {
+          alert('Selecciona al menos dos archivos para unir.');
+          return;
+        }
+
+        mediaRecorder = new MediaRecorder(dest.stream);
+        recordedChunks.length = 0;
+
+        mediaRecorder.ondataavailable = e => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+          audioOutput.src = URL.createObjectURL(blob);
+          audioOutput.load();
+        };
+
+        recordingDuration = Math.max(...sources.map(s => s.buffer.duration)) * 1000;
+
+        mediaRecorder.start();
+        const now = audioContext.currentTime;
+        sources.forEach(s => s.start(now));
+
+        setTimeout(() => {
+          if (mediaRecorder.state === 'recording') mediaRecorder.stop();
+          sources.forEach(s => s.stop());
+        }, recordingDuration);
+
+        recordingStartTime = Date.now();
+        timerInterval = setInterval(updateTimer, 200);
+        mergeBtn.disabled = true;
+      });
+    })();
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f0f1a;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  /* 🔵 Bloque 1: Barra superior */
+  .top-bar {
+    background-color: #4c1d95;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .top-bar a {
+    color: #fff;
+    text-decoration: underline;
+  }
+  
+  /* 🔵 Bloque 2: Contenido principal */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  
+  .main h1 {
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+  
+  .main h2 {
+    font-size: 24px;
+    color: #bbb;
+    margin-bottom: 20px;
+  }
+  
+  .main p {
+    max-width: 600px;
+    color: #ccc;
+    margin-bottom: 30px;
+  }
+  
+
+  /* 🔵 Bloque 3: Cuadros de funciones */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 60px;
+  }
+  
+  .tool-card {
+    background-color: #1f1f2e;
+    border-radius: 16px;
+    padding: 50px 20px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #ffffff;
+    transition: transform 0.3s, background 0.3s;
+    cursor: pointer;
+  }
+  
+  .tool-card:hover {
+    background-color: #4c1d95;
+    transform: translateY(-8px);
+  }
+  
+  
+  /* Footer */
+  .footer {
+    background-color: #1f1f2e;
+    text-align: center;
+    padding: 15px;
+    font-size: 14px;
+    color: #777;
+  }
+  a {
+    color: #ffffff;
+  } 

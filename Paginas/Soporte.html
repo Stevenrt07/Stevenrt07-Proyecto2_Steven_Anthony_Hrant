@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Soporte MusicIAn - MusicIAn</title>
+  <link rel="stylesheet" href="../CSS/soporte.css">
+</head>
+
+<body>
+  <!-- HEADER -->
+  <div class="top-bar">
+    <p><a href="paginaprincipal.html">Página principal</a><a href="Removedor.html">🎛 Removedor</a><a
+        href="Separador.html">🔀 Separador</a><a href="../Páginas/Pitcher.html">🎚 Pitcher</a><a
+        href="../Páginas/Detector BPM.html">🎵 Detector BPM</a><a href="../Páginas/Cortadoraudio.html">✂️ Cortador</a><a
+        href="../Páginas/Unificador.html">🔗 Unificador</a><a href="../Páginas/Grabador.html">🎤 Grabador</a><a
+        href="../Páginas/Karaoke.html">🎙 Karaoke</a><a href="../Páginas/Soporte.html">❓ Soporte</a>
+  </p>
+  </div>
+  <!-- MAIN -->
+  <div class="main" aria-label="Soporte MusicIAn - Formulario y Preguntas Frecuentes">
+    <h1>Soporte MusicIAn</h1>
+
+
+    <form id="supportForm" aria-label="Formulario de contacto soporte">
+      <label for="email">Correo electrónico:</label>
+      <input type="email" id="email" name="email" required aria-required="true" placeholder="tu@correo.com" />
+
+
+      <label for="topic">Tema relacionado:</label>
+      <select id="topic" name="topic" required aria-required="true">
+        <option value="" disabled selected>Selecciona un tema</option>
+        <option value="problemas-subida">Problemas al subir audio</option>
+        <option value="calidad-audio">Calidad del audio procesado</option>
+        <option value="formatos-soportados">Formatos de audio soportados</option>
+        <option value="errores-proceso">Errores durante el procesamiento</option>
+        <option value="funcionalidades">Uso y funcionalidades de MusicIAn</option>
+        <option value="tiempos-procesamiento">Tiempos de procesamiento y descarga</option>
+        <option value="cuentas-y-privacidad">Cuentas y privacidad</option>
+        <option value="otros">Otros</option>
+      </select>
+
+
+      <label for="message">Mensaje / Consulta:</label>
+      <textarea id="message" name="message" rows="5" required aria-required="true"
+        placeholder="Escribe aquí tu consulta..."></textarea>
+
+
+      <button type="submit" aria-label="Enviar consulta a soporte">Enviar</button>
+    </form>
+
+
+    <h2>Preguntas Frecuentes (FAQ)</h2>
+
+
+    <div id="faq">
+      <div class="faq-item" tabindex="0" role="button" aria-expanded="false" aria-controls="faq1-answer"
+        aria-label="¿Qué es MusicIAn?">
+        <div class="faq-question">
+          <span>¿Qué es MusicIAn?</span>
+        </div>
+        <div id="faq1-answer" class="faq-answer">
+          MusicIAn es una herramienta web que permite eliminar la voz principal de canciones para obtener pistas
+          instrumentales, cortar, fusionar y editar archivos de audio fácilmente.
+        </div>
+      </div>
+
+
+      <div class="faq-item" tabindex="0" role="button" aria-expanded="false" aria-controls="faq2-answer"
+        aria-label="¿Qué formatos de audio puedo subir?">
+        <div class="faq-question">
+          <span>¿Qué formatos de audio puedo subir?</span>
+        </div>
+        <div id="faq2-answer" class="faq-answer">
+          Puedes subir archivos en formatos comunes como MP3, WAV, FLAC y OGG. Se recomienda que el archivo no supere
+          los 100 MB para un procesamiento óptimo.
+        </div>
+      </div>
+
+
+      <div class="faq-item" tabindex="0" role="button" aria-expanded="false" aria-controls="faq3-answer"
+        aria-label="¿Por qué mi archivo no procesa correctamente?">
+        <div class="faq-question">
+          <span>¿Por qué mi archivo no procesa correctamente?</span>
+
+        </div>
+        <div id="faq3-answer" class="faq-answer">
+          Esto puede deberse a un archivo corrupto, un formato no soportado o problemas de conexión. Intenta usar otro
+          archivo o verifica tu conexión a internet.
+        </div>
+      </div>
+
+
+      <div class="faq-item" tabindex="0" role="button" aria-expanded="false" aria-controls="faq4-answer"
+        aria-label="¿La calidad de la pista instrumental es perfecta?">
+        <div class="faq-question">
+          <span>¿La calidad de la pista instrumental es perfecta?</span>
+
+        </div>
+        <div id="faq4-answer" class="faq-answer">
+          MusicIAn utiliza algoritmos avanzados para eliminar la voz principal, pero debido a la naturaleza del audio,
+          puede haber pequeñas imperfecciones dependiendo de la canción original.
+        </div>
+      </div>
+
+
+      <div class="faq-item" tabindex="0" role="button" aria-expanded="false" aria-controls="faq5-answer"
+        aria-label="¿Cómo contacto soporte directamente?">
+        <div class="faq-question">
+          <span>¿Cómo contacto soporte directamente?</span>
+
+        </div>
+        <div id="faq5-answer" class="faq-answer">
+          Puedes contactarnos usando el formulario que hay en esta página. Nuestro equipo de soporte te responderá lo
+          antes posible por correo electrónico.
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- FOOTER -->
+  <div class="footer">
+    <h1>MusicIAn</h1>
+    <p> © 2025 MusicIAn - Todos los derechos reservados</p>
+    <p>Política de Privacitat • Avís Legal • Política de Cookies • Política de Qualitat</p>
+  </div>
+
+
+  <script>
+    // Toggle FAQ answers open/close
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-question');
+      const toggleIcon = item.querySelector('.toggle-icon');
+      question.addEventListener('click', () => toggleFAQ(item));
+      item.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleFAQ(item);
+        }
+      });
+      function toggleFAQ(el) {
+        const expanded = el.getAttribute('aria-expanded') === 'true';
+        el.setAttribute('aria-expanded', String(!expanded));
+        if (!expanded) {
+          el.classList.add('open');
+          toggleIcon.textContent = '−';
+        } else {
+          el.classList.remove('open');
+          toggleIcon.textContent = '+';
+        }
+      }
+    });
+
+
+    // Handle form submission
+    const form = document.getElementById('supportForm');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const email = form.email.value.trim();
+      const topic = form.topic.value;
+      const message = form.message.value.trim();
+      if (!email || !topic || !message) {
+        alert('Por favor completa todos los campos antes de enviar.');
+        return;
+      }
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert('Por favor ingresa un correo electrónico válido.');
+        return;
+      }
+      // Simulate sending (no backend)
+      alert('Gracias por contactarnos. Tu mensaje ha sido recibido y te responderemos pronto.');
+      form.reset();
+    });
+  </script>
+
+
+</body>
+
+</html>

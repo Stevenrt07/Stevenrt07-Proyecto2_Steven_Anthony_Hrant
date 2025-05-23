@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Detector BPM</title>
+  <link rel="stylesheet" href="../CSS/detetctorbpm.css">
+</head>
+
+<body>
+  <!-- HEADER -->
+  <div class="top-bar">
+    <p><a href="paginaprincipal.html">Página principal</a><a href="Removedor.html">🎛 Removedor</a><a
+        href="Separador.html">🔀 Separador</a><a href="../Páginas/Pitcher.html">🎚 Pitcher</a><a
+        href="../Páginas/Detector BPM.html">🎵 Detector BPM</a><a href="../Páginas/Cortadoraudio.html">✂️ Cortador</a><a
+        href="../Páginas/Unificador.html">🔗 Unificador</a><a href="../Páginas/Grabador.html">🎤 Grabador</a><a
+        href="../Páginas/Karaoke.html">🎙 Karaoke</a><a href="../Páginas/Soporte.html">❓ Soporte</a>
+  </div>
+  </p>
+  </div>
+  <!-- MAIN -->
+  <div class="main">
+    <section id="bpm-finder">
+      <h2>Detectar BPM y Tono</h2>
+      <p>Identifica el tempo (BPM) y la tonalidad de una canción.</p>
+      <input id="audio_file" type="file" accept="audio/*"></input>
+      <form>
+        <input type="file" accept="audio/*" required />
+        <button type="submit">Analizar</button>
+      </form>
+      <div class="resultado">
+        <p>BPM: <strong>--</strong></p>
+        <p>Tonalidad: <strong>--</strong></p>
+      </div>
+    </section>
+  </div>
+  <script src="./js/beat-detector.js"></script>    
+  <!-- FOOTER -->
+  <div class="footer">
+    <h1>MusicIAn</h1>
+    <p>© 2025 MusicIAn - Todos los derechos reservados</p>
+    <p>Política de Privacitat • Avís Legal • Política de Cookies • Política de Qualitat</p>
+  </div>
+</body>
+
+</html>

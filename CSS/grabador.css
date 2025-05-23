@@ -1,0 +1,94 @@
+body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0f0f1a;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* 🔵 HEADER */
+    .top-bar {
+      background-color: #4c1d95;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    .top-bar a {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    /* 🔵 BLOQUE 2: CONTENIDO PRINCIPAL */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .main h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .main h2 {
+      font-size: 24px;
+      color: #bbb;
+      margin-bottom: 20px;
+    }
+
+    .main p {
+      max-width: 600px;
+      color: #ccc;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 12px 24px;
+      background-color: #5b21b6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 5px;
+      font-size: 16px;
+    }
+
+    button:disabled {
+      background-color: #333;
+      cursor: not-allowed;
+    }
+
+    audio {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 600px;
+      outline: none;
+    }
+
+    #download {
+      display: none;
+      margin-top: 20px;
+      font-size: 16px;
+      color: #5b21b6;
+      text-decoration: none;
+    }
+
+    /* FOOTER */
+    .footer {
+      background-color: #1f1f2e;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      color: #777;
+    }
+
+    a {
+      color: #ffffff;
+    }
